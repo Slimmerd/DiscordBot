@@ -1,0 +1,29 @@
+{
+  "name": "nrk-discordbot",
+  "version": "0.0.1",
+  "description": "Discord but using JS ",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Slimmerd/DiscordBot.git"
+  },
+  "keywords": [
+    "discord.js",
+    "discord",
+    "bot"
+  ],
+  "author": "Daniil Silin <daniil.silin@gmail.com>",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Slimmerd/DiscordBot/issues"
+  },
+  "homepage": "https://github.com/Slimmerd/DiscordBot#readme",
+  "dependencies": {
+    "discord.js": "^12.5.1",
+    "dotenv": "^8.2.0"
+  }
+}
