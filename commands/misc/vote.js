@@ -8,6 +8,7 @@ module.exports = class VoteCommand extends Command {
             group: 'misc',
             memberName: 'vote',
             description: "Starts a yes/no/don't care vote.",
+            guildOnly: true,
             args: [
                 {
                     key: 'question',

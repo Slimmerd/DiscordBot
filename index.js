@@ -4,6 +4,18 @@ const path = require('path')
 const {Structures} = require('discord.js');
 const Commando = require('discord.js-commando')
 
+// TODO: Create role selection system
+// TODO: Refactor logging system
+// TODO: Select channel
+
+// TODO: Warn system (warn, infractions)
+// TODO: Moderating system (mute, tempmute, unmute,)
+//TODO: Delete user message and server answer after a time
+
+// TODO: Leveling system with cards
+// TODO: YT and Twitch Notifications
+// TODO: Audio recording
+
 Structures.extend('Guild', Guild => {
     class MusicGuild extends Guild {
         constructor(client, data) {
@@ -63,12 +75,11 @@ client.on('ready', async () => {
     // console.warn(guildCommands)
     // client.api.applications(client.user.id).guilds('256778099780222978').commands('814633612611813376').delete()
 
-
     client.ws.on('INTERACTION_CREATE', async interaction => {
         const command = interaction.data.name.toLowerCase();
         const args = interaction.data.options;
 
-        if (command === 'test'){
+        if (command === 'test') {
             // here you could do anything. in this sample
             // i reply with an api interaction
             client.api.interactions(interaction.id, interaction.token).callback.post({
@@ -94,11 +105,24 @@ client.on('ready', async () => {
         .registerGroups([
             ["misc", "⚙️ Misc"],
             ['owner', "♿️ Owner"],
-            ["music", "🎵 Music"]
+            ["music", "🎵 Music"],
+            ["moder", "🍻 Moderation"]
         ])
         .registerCommandsIn(path.join(__dirname, 'commands'))
 
-
+    const Audit = require("@root/features/audit");
+// will send all event to #audit-logs channel
+// will send movement (join/leave) to #in-out channel if the channel exist
+    Audit(client, {
+        "256778099780222978": {
+            auditlog: "bot-developing",
+            movement: "bot-developing",
+            auditmsg: false, // Default to fasle, recommend to set a channel
+            voice: 'bot-developing', // Set a Channel name if you want it
+            trackroles: true, // Default is False
+            // excludedroles: ['671004697850544111', '671004697850544112']  // This is an OPTIONAL array of Roles ID that won't be tracked
+        }
+    })
 
     client.user.setActivity(`Используйте ${process.env.PREFIX}help`)
 })

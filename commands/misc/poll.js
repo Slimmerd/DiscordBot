@@ -8,6 +8,7 @@ module.exports = class PollCommand extends Command {
             group: 'misc',
             memberName: 'poll',
             description: 'Creates a poll with up to 10 choices.',
+            guildOnly: true,
             args: [
                 {
                     key: 'question',
@@ -59,7 +60,7 @@ module.exports = class PollCommand extends Command {
 
         let optionsText = '';
         for (let i = 0; i < optionsList.length; i++) {
-            optionsText += emojiList[i] + ' ' + optionsList[i] + '\n';
+            optionsText += emojiList[i] + ' - ' + optionsList[i] + '\n';
         }
 
         let embed = new MessageEmbed()

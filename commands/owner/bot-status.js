@@ -1,4 +1,4 @@
-const { Command, version } = require('discord.js-commando');
+const {Command, version} = require('discord.js-commando');
 const Discord = require('discord.js');
 const os = require('os');
 const pkg = require('../../package.json');
@@ -7,9 +7,12 @@ module.exports = class BotStatusCommand extends Command {
     constructor(client) {
         super(client, {
             name: 'bot-status',
-            group: 'misc',
+            aliases: ['bs'],
+            group: 'owner',
             memberName: 'bot-status',
-            description: 'Shows the current system status'
+            description: 'Shows the current system status',
+            hidden: true,
+            ownerOnly: true
         });
     }
 
