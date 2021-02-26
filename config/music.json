@@ -1,0 +1,6 @@
+{
+  "playLiveStreams": true,
+  "playVideosLongerThanHour": true,
+  "maxQueueLength": 1000,
+  "ShuffleYTPlaylists": false
+}
