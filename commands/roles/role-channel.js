@@ -9,48 +9,108 @@ module.exports = class RoleChannelCommand extends Command {
             memberName: 'role-channel',
             group: 'roles',
             description: "Choose role channel",
-            userPermissions: ['ADMINISTRATOR'],
-            clientPermissions: ['ADMINISTRATOR'],
+            userPermissions: ['MANAGE_ROLES'],
+            clientPermissions: ['MANAGE_ROLES'],
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: "roleName",
-                    prompt: 'What is the chosen role?',
+                    prompt: 'Please mention the role with @',
                     type: 'string',
                 },
                 {
                     key: "roleChannel",
-                    prompt: 'What is the text channel for chosen role?',
+                    prompt: 'Please mention the channel with #',
                     type: 'string',
                 }
             ]
         });
     }
 
-    async run(message, {roleName,roleChannel}) {
+    async run(message, {roleName, roleChannel}) {
+        await message.delete()
+
         let chosenRole = message.mentions.roles.first()
         let chosenChannel = message.mentions.channels.first()
         const key = `roles_${message.guild.id}`
-        console.warn(chosenRole.name)
-        console.warn(chosenChannel.name)
+        // console.warn(chosenRole.name)
+        // console.warn(chosenChannel.name)
 
         let assignedRoles = db.get(key)
         // console.warn(assignedRoles)
 
         if (assignedRoles === null) {
-            db.set(key, [{[chosenRole.id] : chosenChannel.id}]);
-            return  message.channel.send(`✅ For **${chosenRole.name}** role channel **${chosenChannel.name}** has been assigned`)
+            db.set(key, [{[chosenRole.id]: chosenChannel.id}]);
+
+            let embed = {
+                title: `✅ For **${chosenRole.name}** role channel **${chosenChannel.name}** has been assigned`,
+                color: '#13be43',
+                timestamp: Date.now(),
+                thumbnail: {
+                    url: message.guild.iconURL()
+                },
+                footer: {
+                    icon_url: message.client.user.avatarURL(),
+                    text: message.client.user.username
+                },
+                author: {
+                    name: message.guild.name,
+                    icon_url: message.guild.iconURL()
+                }
+            }
+
+            return message.channel.send({embed})
         }
 
         let duplicateCheck = db.get(key).find((x) => x[chosenRole.id])
-        console.warn('s',duplicateCheck)
-        //
-        if (duplicateCheck){
+        console.warn('[WARN] Duplicates:', duplicateCheck)
+
+        if (duplicateCheck) {
             let textChannel = this.client.channels.cache.get(duplicateCheck[chosenRole.id]).name
-            return message.channel.send(`❌ For role **${chosenRole.name}** text channel **${textChannel}** already assigned`)
+
+            let embed = {
+                title: `❌ For role **${chosenRole.name}** text channel **${textChannel}** already assigned`,
+                color: '#be1313',
+                timestamp: Date.now(),
+                thumbnail: {
+                    url: message.guild.iconURL()
+                },
+                footer: {
+                    icon_url: message.client.user.avatarURL(),
+                    text: message.client.user.username
+                },
+                author: {
+                    name: message.guild.name,
+                    icon_url: message.guild.iconURL()
+                }
+            }
+
+            return message.channel.send({embed})
         } else if (assignedRoles !== null) {
-            db.push(key, {[chosenRole.id] : chosenChannel.id})
-            return  message.channel.send(`✅ For **${chosenRole.name}** role channel **${chosenChannel.name}** has been assigned`)
+            db.push(key, {[chosenRole.id]: chosenChannel.id})
+
+            let embed = {
+                title: `✅ For **${chosenRole.name}** role channel **${chosenChannel.name}** has been assigned`,
+                color: '#13be43',
+                timestamp: Date.now(),
+                thumbnail: {
+                    url: message.guild.iconURL()
+                },
+                footer: {
+                    icon_url: message.client.user.avatarURL(),
+                    text: message.client.user.username
+                },
+                author: {
+                    name: message.guild.name,
+                    icon_url: message.guild.iconURL()
+                }
+            }
+
+            return message.channel.send({embed})
         }
     }
 };

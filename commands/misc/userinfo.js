@@ -8,10 +8,14 @@ module.exports = class UserInfoCommand extends Command {
             aliases: ['ui'],
             group: 'misc',
             memberName: 'userinfo',
-            description: 'Информация о пользователе',
+            description: 'Information about user',
             clientPermissions: ['ADMINISTRATOR'],
             userPermissions: ['MANAGE_MESSAGES'],
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: 'userToCheck',

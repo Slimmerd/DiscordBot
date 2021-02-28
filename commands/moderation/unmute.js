@@ -9,6 +9,10 @@ module.exports = class UnMuteCommand extends Command {
             description: "Unmute user",
             userPermissions: ['KICK_MEMBERS', 'BAN_MEMBERS'],
             clientPermissions: ['KICK_MEMBERS', 'BAN_MEMBERS'],
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: "userName",
@@ -20,14 +24,49 @@ module.exports = class UnMuteCommand extends Command {
     }
 
     async run(message, {userName}) {
+        await message.delete()
         let user = message.mentions.members.first()
         let mutedRole = message.guild.roles.cache.find(x => x.name === "Muted");
 
-        if(user.roles.cache.has(mutedRole)) return message.channel.send("This member isn't muted");
+        if (user.roles.cache.has(mutedRole)) return message.channel.send({
+            embed: {
+                title: `⚠️ **${user}** is not muted`,
+                color: '#be1313',
+                timestamp: Date.now(),
+                thumbnail: {
+                    url: message.guild.iconURL()
+                },
+                footer: {
+                    icon_url: message.client.user.avatarURL(),
+                    text: message.client.user.username
+                },
+                author: {
+                    name: message.guild.name,
+                    icon_url: message.guild.iconURL()
+                }
+            }
+        });
 
         await user.roles.remove(mutedRole);
 
-        return message.channel.send(`${user} has been unmuted`)
+        return message.channel.send({
+            embed: {
+                title: `🍻 **${user}** has been unmuted`,
+                color: '#be1313',
+                timestamp: Date.now(),
+                thumbnail: {
+                    url: message.guild.iconURL()
+                },
+                footer: {
+                    icon_url: message.client.user.avatarURL(),
+                    text: message.client.user.username
+                },
+                author: {
+                    name: message.guild.name,
+                    icon_url: message.guild.iconURL()
+                }
+            }
+        })
     }
 };
 

@@ -1,5 +1,4 @@
-const { Command } = require('discord.js-commando');
-const { MessageEmbed } = require('discord.js');
+const {Command} = require('discord.js-commando');
 
 module.exports = class BanCommand extends Command {
     constructor(client) {
@@ -11,6 +10,10 @@ module.exports = class BanCommand extends Command {
             guildOnly: true,
             userPermissions: ['MANAGE_MESSAGES', 'KICK_MEMBERS', 'BAN_MEMBERS'],
             clientPermissions: ['MANAGE_MESSAGES', 'KICK_MEMBERS', 'BAN_MEMBERS'],
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: 'userToBan',
@@ -36,26 +39,80 @@ module.exports = class BanCommand extends Command {
         });
     }
 
-    async run(message, { userToBan, reason, daysDelete }) {
+    async run(message, {userToBan, reason, daysDelete}) {
+        await message.delete()
         const extractNumber = /\d+/g;
         const userToBanID = userToBan.match(extractNumber)[0];
         const user =
             message.mentions.members.first() ||
             (await message.guild.members.fetch(userToBanID));
         if (user === undefined)
-            return message.channel.send(':x: Please try again with a valid user.');
+            return message.channel.send({
+                embed: {
+                    title: `⚠️️ Please try again with a valid user`,
+                    color: '#be1313',
+                    timestamp: Date.now(),
+                    thumbnail: {
+                        url: message.guild.iconURL()
+                    },
+                    footer: {
+                        icon_url: message.client.user.avatarURL(),
+                        text: message.client.user.username
+                    },
+                    author: {
+                        name: message.guild.name,
+                        icon_url: message.guild.iconURL()
+                    }
+                }
+            });
         user
-            .ban({ days: daysDelete, reason: reason })
+            .ban({days: daysDelete, reason: reason})
             .then(() => {
-                const banEmbed = new MessageEmbed()
-                    .addField('Banned:', userToBan)
-                    .addField('Reason', reason)
-                    .setColor('#420626');
-                message.channel.send(banEmbed);
+                message.channel.send({
+                    embed: {
+                        title: `⛔️ **${userToBan}** banned`,
+                        fields: [
+                            {
+                                name: '⚠️ Reason:',
+                                value: reason
+                            }
+                        ],
+                        color: '#13be43',
+                        timestamp: Date.now(),
+                        thumbnail: {
+                            url: message.guild.iconURL()
+                        },
+                        footer: {
+                            icon_url: message.client.user.avatarURL(),
+                            text: message.client.user.username
+                        },
+                        author: {
+                            name: message.guild.name,
+                            icon_url: message.guild.iconURL()
+                        }
+                    }
+                });
             })
             .catch(err => {
-                message.reply(
-                    ':x: Something went wrong when trying to ban this user, I probably do not have the permission to ban him!'
+                message.reply({
+                        embed: {
+                            title: `❌ Something went wrong when trying to ban this user`,
+                            description: 'I probably do not have the permission to ban him',
+                            color: '#be1313',
+                            timestamp: Date.now(),
+                            thumbnail: {
+                                url: message.guild.iconURL()
+                            },
+                            footer: {
+                                icon_url: message.client.user.avatarURL(),
+                                text: message.client.user.username
+                            },
+                            author: {
+                                name: message.guild.name,
+                                icon_url: message.guild.iconURL()
+                            }
+                        }
+                    }
                 );
                 return console.error(err);
             });

@@ -5,12 +5,8 @@ const {Structures} = require('discord.js');
 const Commando = require('discord.js-commando')
 
 // TODO: Refactor music system
-// TODO: Refactor logging system
-// TODO: Delete user message and server answer after a time
+// TODO: Refactor logging system (add choose channel ability)
 // TODO: Refactor warns, mute system
-
-// TODO: Create role selection system
-// TODO: Select channel
 
 // TODO: Leveling system with cards
 // TODO: YT and Twitch Notifications
@@ -119,7 +115,7 @@ client.on('ready', async () => {
             auditmsg: false, // Default to fasle, recommend to set a channel
             voice: 'bot-developing', // Set a Channel name if you want it
             trackroles: true, // Default is False
-            // excludedroles: ['671004697850544111', '671004697850544112']  // This is an OPTIONAL array of Roles ID that won't be tracked
+            // excludedroles: ['']  // This is an OPTIONAL array of Roles ID that won't be tracked
         }
     })
 

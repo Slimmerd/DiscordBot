@@ -7,7 +7,11 @@ module.exports = class PingCommand extends Command {
             name: 'ping',
             group: 'misc',
             memberName: 'ping',
-            description: 'Возвращает задержку бота и API',
+            description: 'Returns Bot and Server latency',
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
         });
     }
 
@@ -15,12 +19,12 @@ module.exports = class PingCommand extends Command {
         const embed = new discord.MessageEmbed()
             .setThumbnail(`https://images.emojiterra.com/google/android-pie/512px/23f1.png`)
             .setColor(0xffcc00)
-            .setTitle('Пинг')
-            .addField(`Идет подсчет`, ('1 2 3'), false)
+            .setTitle('Ping')
+            .addField(`Calculating`, ('...1 ...2 ...3'), false)
             .setFooter(message.client.user.username, message.client.user.avatarURL())
             .setTimestamp();
 
-        message.channel.type !== "dm" ? message.delete() : null // Check If not DM
+        message.channel.type !== "dm" ? await message.delete() : null // Check If not DM
 
         return message.reply(embed).then(result => {
             const ping = result.createdTimestamp - message.createdTimestamp
@@ -29,12 +33,11 @@ module.exports = class PingCommand extends Command {
                 new discord.MessageEmbed()
                     .setThumbnail(`https://images.emojiterra.com/google/android-pie/512px/23f1.png`)
                     .setColor(0xffcc00)
-                    .setTitle('Пинг')
-                    .addField('Задержка бота:', `${ping} мс`)
-                    .addField('API задержка:', `${this.client.ws.ping} мс`)
+                    .setTitle('Ping')
+                    .addField('Bot latency:', `${ping} ms`)
+                    .addField('API latency:', `${this.client.ws.ping} ms`)
                     .setFooter(message.client.user.username, message.client.user.avatarURL())
                     .setTimestamp()
-
             )
         });
     }

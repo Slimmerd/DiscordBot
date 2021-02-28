@@ -8,8 +8,12 @@ module.exports = class ServerInfo extends Command {
             aliases: ['si'],
             group: 'misc',
             memberName: 'serverinfo',
-            description: 'Информация о сервере',
+            description: 'Information about server',
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
         });
     }
 

@@ -1,5 +1,5 @@
 const {Command} = require('discord.js-commando');
-const db = require('quick.db');
+const assignedRoles = require('@util/assignedRoles')
 
 module.exports = class RoleChannelListCommand extends Command {
     constructor(client) {
@@ -9,36 +9,53 @@ module.exports = class RoleChannelListCommand extends Command {
             memberName: 'role-channels-list',
             group: 'roles',
             description: "Look for assigned channels",
-            userPermissions: ['ADMINISTRATOR'],
-            clientPermissions: ['ADMINISTRATOR'],
+            userPermissions: ['MANAGE_ROLES'],
+            clientPermissions: ['MANAGE_ROLES'],
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
         });
     }
 
-    async run(message, {roleName,roleChannel}) {
-        let chosenRole = message.mentions.roles.first()
-        let chosenChannel = message.mentions.channels.first()
-        const key = `roles_${message.guild.id}`
-        console.warn(chosenRole.name)
-        console.warn(chosenChannel.name)
+    async run(message) {
+        await message.delete()
 
-        let assignedRoles = db.get(key)
-        // console.warn(assignedRoles)
-
-        if (assignedRoles === null) {
-            db.set(key, [{[chosenRole.id] : chosenChannel.id}]);
-            return  message.channel.send(`✅ For **${chosenRole.name}** role channel **${chosenChannel.name}** has been assigned`)
+        let embed = {
+            "title": "All assigned roles to channels on this server",
+            "description": assignedRoles(message).join('\n'),
+            "color": 'RANDOM',
+            "timestamp": Date.now(),
+            "footer": {
+                "icon_url": message.client.user.avatarURL(),
+                "text": message.client.user.username
+            },
+            "thumbnail": {
+                "url": message.guild.iconURL()
+            },
+            "author": {
+                "name": message.guild.name,
+                "icon_url": message.guild.iconURL()
+            },
+            "fields": [
+                {name: '\u200B', value: '\u200B'},
+                {
+                    "name": "♻️ Clear all roles:",
+                    "value": "To clear all assigned roles use: ```\/rcs-clear```"
+                },
+                {
+                    "name": "🛠 Clear particular role:",
+                    "value": "To clear particular role use: ```\/rc-clear <@rolename>```"
+                },
+                {
+                    "name": "🛂 Assign role to channel:",
+                    "value": "To assign role to channel use: ```\/rc <@rolename> <#rolechannel>```"
+                }
+            ]
         }
 
-        let duplicateCheck = db.get(key).find((x) => x[chosenRole.id])
-        console.warn('s',duplicateCheck)
-        //
-        if (duplicateCheck){
-            let textChannel = this.client.channels.cache.get(duplicateCheck[chosenRole.id]).name
-            return message.channel.send(`❌ For role **${chosenRole.name}** text channel **${textChannel}** already assigned`)
-        } else if (assignedRoles !== null) {
-            db.push(key, {[chosenRole.id] : chosenChannel.id})
-            return  message.channel.send(`✅ For **${chosenRole.name}** role channel **${chosenChannel.name}** has been assigned`)
-        }
+        return message.channel.send({embed})
+        // message.channel.send(`\`\`\`\n${assignedRoles.join('\n')}\n\`\`\``) // Pass values in code block
     }
 };

@@ -29,6 +29,7 @@ module.exports = class LookupCommand extends Command {
     }
 
     async run(message, { text }) {
+        await message.delete()
         const resl = text;
 
         try {
@@ -46,17 +47,17 @@ module.exports = class LookupCommand extends Command {
                         'https://ip-api.com'
                     )
                     .addFields(
-                        { name: 'Query', value: resl, inline: true },
-                        { name: 'Resolves', value: json.query, inline: true },
+                        { name: 'Query:', value: resl, inline: true },
+                        { name: 'Resolves:', value: json.query, inline: true },
                         { name: '‎', value: '‎', inline: true },
                         {
-                            name: 'Location',
+                            name: 'Location:',
                             value: `${json.city}, ${json.zip}, ${json.regionName}, ${json.country}`,
                             inline: false
                         },
-                        { name: 'ORG', value: `${json.org}‎`, inline: true }, // organisation who own the ip
-                        { name: 'ISP', value: json.isp, inline: true }, // internet service provider
-                        { name: 'OBO', value: json.as, inline: false }
+                        { name: 'ORG:', value: `${json.org}‎`, inline: true }, // organisation who own the ip
+                        { name: 'ISP:', value: json.isp, inline: true }, // internet service provider
+                        { name: 'OBO:', value: json.as, inline: false }
                     )
                     .setTimestamp(); //img here
             }

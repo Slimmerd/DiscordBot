@@ -1,5 +1,4 @@
 const {Command} = require('discord.js-commando');
-const {MessageEmbed} = require('discord.js');
 
 module.exports = class KickCommand extends Command {
     constructor(client) {
@@ -11,6 +10,10 @@ module.exports = class KickCommand extends Command {
             guildOnly: true,
             userPermissions: ['MANAGE_MESSAGES', 'KICK_MEMBERS', 'BAN_MEMBERS'],
             clientPermissions: ['MANAGE_MESSAGES', 'KICK_MEMBERS', 'BAN_MEMBERS'],
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: 'userToKick',
@@ -28,27 +31,79 @@ module.exports = class KickCommand extends Command {
     }
 
     async run(message, {userToKick, reason}) {
+        await message.delete()
         const extractNumber = /\d+/g;
         const userToKickID = userToKick.match(extractNumber)[0];
         const user =
             message.mentions.members.first() ||
             (await message.guild.members.fetch(userToKickID));
         if (user === undefined)
-            return message.channel.send(':x: Please try again with a valid user.');
-        user
-            .kick(reason)
+            return message.channel.send({
+                embed: {
+                    title: `⚠️️ Please try again with a valid user`,
+                    color: '#be1313',
+                    timestamp: Date.now(),
+                    thumbnail: {
+                        url: message.guild.iconURL()
+                    },
+                    footer: {
+                        icon_url: message.client.user.avatarURL(),
+                        text: message.client.user.username
+                    },
+                    author: {
+                        name: message.guild.name,
+                        icon_url: message.guild.iconURL()
+                    }
+                }
+            });
+
+        user.kick(reason)
             .then(() => {
-                const kickEmbed = new MessageEmbed()
-                    .addField('Kicked:', userToKick)
-                    .addField('Reason:', reason)
-                    .setColor('#420626')
-                    .setFooter(message.client.user.username, message.client.user.avatarURL())
-                    .setTimestamp();
-                message.channel.send(kickEmbed);
+                message.channel.send({
+                    embed: {
+                        title: `‼️ **${userToKick}** kicked`,
+                        fields: [
+                            {
+                                name: '⚠️ Reason:',
+                                value: reason
+                            }
+                        ],
+                        color: '#be1313',
+                        timestamp: Date.now(),
+                        thumbnail: {
+                            url: message.guild.iconURL()
+                        },
+                        footer: {
+                            icon_url: message.client.user.avatarURL(),
+                            text: message.client.user.username
+                        },
+                        author: {
+                            name: message.guild.name,
+                            icon_url: message.guild.iconURL()
+                        }
+                    }
+                });
             })
             .catch(err => {
-                message.reply(
-                    ':x: Something went wrong when trying to kick this user, I probably do not have the permission to kick him!'
+                message.reply({
+                        embed: {
+                            title: `❌ Something went wrong when trying to kick this user`,
+                            description: 'I probably do not have the permission to kick him',
+                            color: '#be1313',
+                            timestamp: Date.now(),
+                            thumbnail: {
+                                url: message.guild.iconURL()
+                            },
+                            footer: {
+                                icon_url: message.client.user.avatarURL(),
+                                text: message.client.user.username
+                            },
+                            author: {
+                                name: message.guild.name,
+                                icon_url: message.guild.iconURL()
+                            }
+                        }
+                    }
                 );
                 return console.error(err);
             });

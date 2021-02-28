@@ -9,6 +9,10 @@ module.exports = class PollCommand extends Command {
             memberName: 'poll',
             description: 'Creates a poll with up to 10 choices.',
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: 'question',
@@ -43,7 +47,8 @@ module.exports = class PollCommand extends Command {
         });
     }
 
-    run(msg, {question, options, time}) {
+    async run(msg, {question, options, time}) {
+        await msg.delete()
         let emojiList = [
             '1⃣',
             '2⃣',
@@ -75,8 +80,6 @@ module.exports = class PollCommand extends Command {
         } else {
             embed.setFooter(`The poll has started and has no end time`);
         }
-
-        msg.delete(); // Remove the user's command message
 
         msg.channel
             .send({embed}) // Definitely use a 2d array here..

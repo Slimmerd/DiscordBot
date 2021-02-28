@@ -8,8 +8,12 @@ module.exports = class UserInfoCommand extends Command {
             aliases: ['rn'],
             group: 'misc',
             memberName: 'rolename',
-            description: 'Информация о роли',
+            description: 'Information about role',
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: 'roleToCheck',
@@ -23,6 +27,7 @@ module.exports = class UserInfoCommand extends Command {
     }
 
     async run(message, {roleToCheck}) {
+        await message.delete()
         // code starts here
         try {
             const

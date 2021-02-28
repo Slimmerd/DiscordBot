@@ -1,5 +1,4 @@
 const db = require('quick.db');
-const infractions = require('./infractions');
 
 const {Command} = require('discord.js-commando');
 
@@ -14,6 +13,10 @@ module.exports = class InfractionsClearCommand extends Command {
             userPermissions: ['KICK_MEMBERS', 'BAN_MEMBERS'],
             clientPermissions: ['KICK_MEMBERS', 'BAN_MEMBERS'],
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: "userName",
@@ -24,15 +27,103 @@ module.exports = class InfractionsClearCommand extends Command {
         });
     }
 
-    async run(message,{userName}){
+    async run(message, {userName}) {
+       await message.delete()
+
         const user = message.mentions.users.first()
+        let key = `warnings_${message.guild.id}_${user.id}`
 
-        if(user.id === message.author.id) return message.channel.send('You can\'t clear your own warnings');
+        if (user.id === message.author.id) return message.channel.send({
+            embed: {
+                title: `❌ You can\'t clear your own warnings`,
+                color: '#be1313',
+                timestamp: Date.now(),
+                thumbnail: {
+                    url: message.guild.iconURL()
+                },
+                footer: {
+                    icon_url: message.client.user.avatarURL(),
+                    text: message.client.user.username
+                },
+                author: {
+                    name: message.guild.name,
+                    icon_url: message.guild.iconURL()
+                }
+            }
+        });
 
-        if(infractions === null) return message.channel.send(`**${user.username} has no warnings**`);
+        let deleteState = await db.delete(key);
 
-        db.delete(`warnings_${message.guild.id}_${user.id}`);
+        if (deleteState) {
+            let check = await db.has(key)
 
-        return message.channel.send('Success!')
+            if (!check) {
+                return message.channel.send({
+                        embed: {
+                            title:
+                                `✅ All infractions **${user.username}** deleted`,
+                            color: '#13be43',
+                            timestamp: Date.now(),
+                            thumbnail: {
+                                url: message.guild.iconURL()
+                            },
+                            footer: {
+                                icon_url: message.client.user.avatarURL(),
+                                text: message.client.user.username
+                            },
+                            author: {
+                                name: message.guild.name,
+                                icon_url: message.guild.iconURL()
+                            }
+                        }
+                    }
+                )
+            } else {
+                return message.channel.send({
+                    embed: {
+                        title: `❌ [ERROR] Infractions **NOT** deleted`,
+                        color: '#be1313',
+                        timestamp: Date.now(),
+                        footer: {
+                            icon_url: message.client.user.avatarURL(),
+                            text: message.client.user.username
+                        },
+                        thumbnail: {
+                            url: message.guild.iconURL()
+                        },
+                        author: {
+                            name: message.guild.name,
+                            icon_url: message.guild.iconURL()
+                        },
+                        fields: [
+                            {
+                                name: "⛔️ Contact bot developer:",
+                                value: "Probably error in DB occurred"
+                            }
+                        ]
+                    }
+                })
+            }
+        } else {
+            return message.channel.send({
+                embed: {
+                    title: `⛔️ Database is empty`,
+                    description: `There is no infractions for **${user.username}**`,
+                    color: '#be1313',
+                    timestamp: Date.now(),
+                    thumbnail: {
+                        url: message.guild.iconURL()
+                    },
+                    footer: {
+                        icon_url: message.client.user.avatarURL(),
+                        text: message.client.user.username
+                    },
+                    author: {
+                        name: message.guild.name,
+                        icon_url: message.guild.iconURL()
+                    }
+                }
+            })
+        }
     }
 }

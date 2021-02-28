@@ -8,14 +8,18 @@ module.exports = class PruneCommand extends Command {
             aliases: ['pr'],
             group: 'misc',
             memberName: 'prune',
-            description: 'Чистка чата',
+            description: 'Clears chat',
             clientPermissions: ['ADMINISTRATOR'],
             userPermissions: ['MANAGE_MESSAGES'],
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: 'amount',
-                    prompt: 'Как много сообщений вы хотите удалить',
+                    prompt: 'How much messages you want to delete',
                     type: 'integer',
                     validate: text => text <= 100,
                 },
@@ -23,7 +27,10 @@ module.exports = class PruneCommand extends Command {
         });
     }
 
-    run(message, {amount}) {
+    //FIX: Real amount and delete more than 100
+    async run(message, {amount}) {
+        await message.delete()
+
         const {guild} = message
         const {name} = guild
         const icon = guild.iconURL()
@@ -31,8 +38,8 @@ module.exports = class PruneCommand extends Command {
         return message.channel.bulkDelete(amount, true).then(() => {
             message.say(new discord.MessageEmbed()
                 .setAuthor(name, icon)
-                .setTitle(`♻️ Сообщения были удалены`)
-                .setDescription(`Удалено ${amount} штук`)
+                .setTitle(`♻️ Chat was cleared`)
+                .setDescription(`Deleted: ${amount}`)
                 .setColor('#22c633')
                 .setTimestamp()
                 .setFooter(message.client.user.username, message.client.user.avatarURL())

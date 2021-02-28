@@ -9,6 +9,10 @@ module.exports = class VoteCommand extends Command {
             memberName: 'vote',
             description: "Starts a yes/no/don't care vote.",
             guildOnly: true,
+            throttling: {
+                usages: 1,
+                duration: 5
+            },
             args: [
                 {
                     key: 'question',
@@ -34,6 +38,8 @@ module.exports = class VoteCommand extends Command {
     }
 
     run(msg, {question, time}) {
+        msg.delete(); // Remove the user's command message
+
         let emojiList = ['👍', '👎', '🤷'];
         let embed = new MessageEmbed()
             .setTitle(':ballot_box: ' + question)
@@ -48,7 +54,6 @@ module.exports = class VoteCommand extends Command {
             embed.setFooter(`The vote has started and has no end time`);
         }
 
-        msg.delete(); // Remove the user's command message
 
         msg.channel
             .send({embed}) // Use a 2d array?

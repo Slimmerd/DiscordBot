@@ -1,3 +1,4 @@
+const assignedRoles = require('@util/assignedRoles')
 module.exports = roleManager = (bot) => {
     // On member join
     bot.on("guildMemberAdd", async message => {
@@ -11,7 +12,7 @@ module.exports = roleManager = (bot) => {
             color: 'RANDOM',
             timestamp: new Date(),
             footer: {
-                text: message.user.nickname,
+                text: message.client.user.username,
                 icon_url: message.client.user.avatarURL(),
             },
             thumbnail: {
@@ -19,11 +20,11 @@ module.exports = roleManager = (bot) => {
             },
             fields: [{
                 name: "Roles list",
-                value: message.guild.roles.cache.map((e) => `${e.name}`).join(', ')
+                value: assignedRoles(message).join('\n'),
             },
                 {
                     name: "What to do next?",
-                    value: `Write command /role <Role name>`
+                    value: "Write command ```\/role <Role name>```"
                 }]
         }
 
