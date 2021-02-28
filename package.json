@@ -37,8 +37,8 @@
   "_moduleAliases": {
     "@root": ".",
     "@util": "./util",
-    "@features": "./features/features",
-    "@commands": ".commands/commands"
+    "@features": "./features",
+    "@commands": ".commands"
   },
   "devDependencies": {
     "nodemon": "^2.0.7"

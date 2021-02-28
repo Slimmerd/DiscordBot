@@ -4,13 +4,13 @@ const path = require('path')
 const {Structures} = require('discord.js');
 const Commando = require('discord.js-commando')
 
-// TODO: Create role selection system
+// TODO: Refactor music system
 // TODO: Refactor logging system
-// TODO: Select channel
+// TODO: Delete user message and server answer after a time
+// TODO: Refactor warns, mute system
 
-// TODO: Warn system (warn, infractions)
-// TODO: Moderating system (mute, tempmute, unmute,)
-//TODO: Delete user message and server answer after a time
+// TODO: Create role selection system
+// TODO: Select channel
 
 // TODO: Leveling system with cards
 // TODO: YT and Twitch Notifications
@@ -77,11 +77,8 @@ client.on('ready', async () => {
 
     client.ws.on('INTERACTION_CREATE', async interaction => {
         const command = interaction.data.name.toLowerCase();
-        const args = interaction.data.options;
 
         if (command === 'test') {
-            // here you could do anything. in this sample
-            // i reply with an api interaction
             client.api.interactions(interaction.id, interaction.token).callback.post({
                 data: {
                     type: 4,
@@ -92,7 +89,6 @@ client.on('ready', async () => {
             })
         }
     });
-
 
     client.registry.registerDefaultTypes()
         .registerDefaultGroups()
@@ -106,13 +102,16 @@ client.on('ready', async () => {
             ["misc", "⚙️ Misc"],
             ['owner', "♿️ Owner"],
             ["music", "🎵 Music"],
-            ["moder", "🍻 Moderation"]
+            ["moder", "🍻 Moderation"],
+            ["roles", "🛂 Roles management"]
         ])
         .registerCommandsIn(path.join(__dirname, 'commands'))
 
     const Audit = require("@root/features/audit");
-// will send all event to #audit-logs channel
-// will send movement (join/leave) to #in-out channel if the channel exist
+    const roleManager = require("@features/roleManager/roleManager")
+
+    roleManager(client)
+
     Audit(client, {
         "256778099780222978": {
             auditlog: "bot-developing",

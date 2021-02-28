@@ -470,16 +470,16 @@ ${newMessage.content.replace(/`/g, "'")}
 
         if (oldState.channelID) {
             if (typeof oldState.channel.parent !== "undefined") {
-                oldChannelName = `${oldparentname}\n\t**${oldchannelname}**\n*${oldchanelid}*`
+                oldChannelName = `**${oldchannelname}**` //`${oldparentname}\n\t //\n*${oldchanelid}*`
             } else {
                 oldChannelName = `-\n\t**${oldparentname}**\n*${oldchanelid}*`
             }
         }
         if (newState.channelID) {
             if (typeof newState.channel.parent !== "undefined") {
-                newChannelName = `${newparentname}\n\t**${newchannelname}**\n*${newchanelid}*`
+                newChannelName = `**${newchannelname}**`//`${newparentname}\n\t \n*${newchanelid}*`
             } else {
-                newChannelName = `-\n\t**${newchannelname}**\n*${newchanelid}*`
+                newChannelName = `-\n\t**${newchannelname}**` //\n*${newchanelid}*`
             }
         }
 
