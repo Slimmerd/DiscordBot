@@ -10,7 +10,7 @@ let {
     ShuffleYTPlaylists
 } = require('@root/config/music.json');
 const youtube = new Youtube(YTAPI);
-const db = require('quick.db');
+const {db} = require("@util/dbInit");
 const Pagination = require('discord-paginationembed');
 
 // Default settings
@@ -60,9 +60,9 @@ module.exports = class PlayCommand extends Command {
 
         }
 
-        if (!this.isNull(db.get(message.member.id))) {
-            const userPlaylists = db.get(message.member.id).savedPlaylists;
-            const found = userPlaylists.find(element => element.name == query);
+        if (!this.isNull(await db.get(message.member.id))) {
+            const userPlaylists = await db.get(message.member.id).savedPlaylists;
+            const found = await userPlaylists.find(element => element.name == query);
             if (found) {
                 const embed = new MessageEmbed()
                     .setColor('#ff0000')
@@ -272,36 +272,37 @@ module.exports = class PlayCommand extends Command {
                 queue[0].voiceChannel = message.guild.me.voice.channel;
             }
         }
+
         queue[0].voiceChannel
             .join()
-            .then(function (connection) {
+            .then(async function (connection) {
                 const dispatcher = connection
                     .play(
-                        ytdl(queue[0].url, {
+                        await ytdl(queue[0].url, {
                             filter: 'audio',
                             quality: 'highestaudio',
                             highWaterMark: 1 << 25
                         })
                     )
-                    .on('start', function () {
+                    .on('start', async function () {
                         message.guild.musicData.songDispatcher = dispatcher;
                         // Volume Settings
-                        if (!db.get(`${message.guild.id}.serverSettings.volume`)) {
+                        if (!await db.get(`${message.guild.id}.serverSettings.volume`)) {
                             dispatcher.setVolume(message.guild.musicData.volume);
                         } else {
                             dispatcher.setVolume(
-                                db.get(`${message.guild.id}.serverSettings.volume`)
+                                await db.get(`${message.guild.id}.serverSettings.volume`)
                             );
                         }
 
                         message.guild.musicData.nowPlaying = queue[0];
                         queue.shift();
                         // Main Message
-                        PlayCommand.createResponse(message).build();
+                        await PlayCommand.createResponse(message).build();
                     })
-                    .on('finish', function () {
+                    .on('finish', async function () {
                         // Save the volume when the song ends
-                        db.set(
+                        await db.set(
                             `${message.member.guild.id}.serverSettings.volume`,
                             message.guild.musicData.songDispatcher.volume
                         );
@@ -645,17 +646,17 @@ module.exports = class PlayCommand extends Command {
                     message.reply(`:grey_exclamation: Leaving the channel.`);
                 },
                 // Play/Pause Button
-                '⏯️': function () {
+                '⏯️': async function () {
                     if (!message.guild.musicData.songDispatcher) return;
 
                     if (message.guild.musicData.songDispatcher.paused === false) {
-                        message.guild.musicData.songDispatcher.pause();
+                        await message.guild.musicData.songDispatcher.pause();
                         videoEmbed
                             .setDescription(songTitle + PlayCommand.playbackBar(message))
                             .setTitle(embedTitle())
                             .setTimeout(600000);
                     } else {
-                        message.guild.musicData.songDispatcher.resume();
+                        await message.guild.musicData.songDispatcher.resume();
 
                         videoEmbed
                             .setDescription(songTitle + PlayCommand.playbackBar(message))
