@@ -1,5 +1,5 @@
 const {Command} = require('discord.js-commando');
-const db = require('quick.db');
+const {db} = require("@util/dbInit");
 
 module.exports = class RoleChannelCommand extends Command {
     constructor(client) {
@@ -37,11 +37,8 @@ module.exports = class RoleChannelCommand extends Command {
         let chosenRole = message.mentions.roles.first()
         let chosenChannel = message.mentions.channels.first()
         const key = `roles_${message.guild.id}`
-        // console.warn(chosenRole.name)
-        // console.warn(chosenChannel.name)
 
-        let assignedRoles = db.get(key)
-        // console.warn(assignedRoles)
+        let assignedRoles = await db.get(key)
 
         if (assignedRoles === null) {
             db.set(key, [{[chosenRole.id]: chosenChannel.id}]);
@@ -66,7 +63,9 @@ module.exports = class RoleChannelCommand extends Command {
             return message.channel.send({embed})
         }
 
-        let duplicateCheck = db.get(key).find((x) => x[chosenRole.id])
+        let duplicateCheck = await db.get(key).then(e => e.find( (x) =>  x[chosenRole.id]))
+
+
         console.warn('[WARN] Duplicates:', duplicateCheck)
 
         if (duplicateCheck) {

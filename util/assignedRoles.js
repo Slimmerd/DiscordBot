@@ -1,9 +1,10 @@
-const db = require('quick.db');
+const {db} = require("@util/dbInit");
 
-module.exports = assignedRoles = (message) => {
+module.exports = assignedRoles = async (message) => {
     const key = `roles_${message.guild.id}`
 
-    let assignedRoles = db.get(key).map((m) => {
+    let assignedRoles = await db.get(key)
+    let data = await assignedRoles.map((m) => {
         let keys = Object.keys(m)
         let values = Object.values(m)
 
@@ -13,5 +14,5 @@ module.exports = assignedRoles = (message) => {
         return `${roleName} **-** ${channelName}`
     })
 
-    return assignedRoles
+    return data
 }

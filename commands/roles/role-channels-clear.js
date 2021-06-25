@@ -1,5 +1,5 @@
 const {Command} = require('discord.js-commando');
-const db = require('quick.db');
+const {db} = require("@util/dbInit");
 
 module.exports = class RoleChannelsClearCommand extends Command {
     constructor(client) {

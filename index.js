@@ -51,26 +51,6 @@ const client = new Commando.CommandoClient({
 client.on('ready', async () => {
     console.log('The client is ready!')
 
-    // client.api.applications(client.user.id).commands.post({
-    //     data: {
-    //         name: 'ping',
-    //         description: 'ping pong!'
-    //     }
-    // })
-    // client.api.applications(client.user.id).guilds('256778099780222978').commands.post({
-    //     data: {
-    //         name: 'test',
-    //         description: 'Пробуем новые API дискорда'
-    //     }
-    // })
-
-    // let globalCommands = await client.api.applications(client.user.id).commands.get()
-    // console.warn(globalCommands)
-    // client.api.applications(client.user.id).commands('814631878397001740').delete()
-    // let guildCommands = await client.api.applications(client.user.id).guilds('256778099780222978').commands.get()
-    // console.warn(guildCommands)
-    // client.api.applications(client.user.id).guilds('256778099780222978').commands('814633612611813376').delete()
-
     client.ws.on('INTERACTION_CREATE', async interaction => {
         const command = interaction.data.name.toLowerCase();
 

@@ -1,4 +1,4 @@
-const db = require('quick.db');
+const {db} = require("@util/dbInit");
 
 module.exports = voteForRole = async (message, role) => {
     const foundRole = message.guild.roles.cache.find(x => x.name === role);
@@ -135,9 +135,9 @@ module.exports = voteForRole = async (message, role) => {
     return test
 }
 
-const findTextChannel = (message, role) => {
+const findTextChannel = async (message, role) => {
     const key = `roles_${message.guild.id}`
-    let as = db.get(key).find(x => x[role.id])
+    let as = await db.get(key).then(e => e.find(x => x[role.id]))
 
     if (as) {
         let roleChannel = as[role.id];

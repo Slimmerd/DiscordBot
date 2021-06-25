@@ -1,5 +1,5 @@
+const {db} = require("@util/dbInit");
 const {Command} = require('discord.js-commando');
-const db = require('quick.db');
 
 module.exports = class WarnCommand extends Command {
     constructor(client) {
@@ -95,7 +95,7 @@ module.exports = class WarnCommand extends Command {
 
         if (warnReason === 0) warnReason = 'Unspecified'
 
-        let warnings = db.get(`warnings_${message.guild.id}_${user.id}`);
+        let warnings = await db.get(`warnings_${message.guild.id}_${user.id}`);
 
         if (warnings === 3) return message.channel.send({
             embed: {
@@ -136,34 +136,34 @@ module.exports = class WarnCommand extends Command {
             }
         }
 
-            let chatNotifyWarned = {
-                embed: {
-                    title: `✅️️ **${user.username}** has been warned`,
-                    description: `For the following reason: **\`${warnReason}\`**`,
-                    color: '#13be43',
-                    timestamp: Date.now(),
-                    thumbnail: {
-                        url: message.guild.iconURL()
-                    },
-                    footer: {
-                        icon_url: message.client.user.avatarURL(),
-                        text: message.client.user.username
-                    },
-                    author: {
-                        name: message.guild.name,
-                        icon_url: message.guild.iconURL()
-                    }
+        let chatNotifyWarned = {
+            embed: {
+                title: `✅️️ **${user.username}** has been warned`,
+                description: `For the following reason: **\`${warnReason}\`**`,
+                color: '#13be43',
+                timestamp: Date.now(),
+                thumbnail: {
+                    url: message.guild.iconURL()
+                },
+                footer: {
+                    icon_url: message.client.user.avatarURL(),
+                    text: message.client.user.username
+                },
+                author: {
+                    name: message.guild.name,
+                    icon_url: message.guild.iconURL()
                 }
             }
+        }
 
         if (warnings === null) {
-            db.set(`warnings_${message.guild.id}_${user.id}`, 1);
+            await db.set(`warnings_${message.guild.id}_${user.id}`, 1);
             user.send(userWarned)
             await message.channel.send(chatNotifyWarned)
         }
 
         if (warnings !== null) {
-            db.add(`warnings_${message.guild.id}_${user.id}`, 1)
+            await db.add(`warnings_${message.guild.id}_${user.id}`, 1)
             user.send(userWarned)
             await message.channel.send(chatNotifyWarned)
         }

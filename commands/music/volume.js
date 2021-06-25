@@ -1,5 +1,5 @@
+const {db} = require("../../util/dbInit");
 const {Command} = require('discord.js-commando');
-const db = require('quick.db');
 
 module.exports = class VolumeCommand extends Command {
     constructor(client) {

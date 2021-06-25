@@ -1,5 +1,4 @@
-const db = require('quick.db');
-
+const {db} = require("@util/dbInit");
 const {Command} = require('discord.js-commando');
 
 module.exports = class InfractionsClearCommand extends Command {

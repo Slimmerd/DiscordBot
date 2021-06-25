@@ -21,10 +21,11 @@ module.exports = class RoleChannelListCommand extends Command {
 
     async run(message) {
         await message.delete()
+        let desc = await assignedRoles(message)
 
         let embed = {
             "title": "All assigned roles to channels on this server",
-            "description": assignedRoles(message).join('\n'),
+            "description": `${desc.join('\n')}`,
             "color": 'RANDOM',
             "timestamp": Date.now(),
             "footer": {

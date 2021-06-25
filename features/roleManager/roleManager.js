@@ -2,6 +2,7 @@ const assignedRoles = require('@util/assignedRoles')
 module.exports = roleManager = (bot) => {
     // On member join
     bot.on("guildMemberAdd", async message => {
+        let desc = await assignedRoles(message)
 
         let embed = {
             author: {
@@ -20,7 +21,7 @@ module.exports = roleManager = (bot) => {
             },
             fields: [{
                 name: "Roles list",
-                value: assignedRoles(message).join('\n'),
+                value: `${desc.join('\n')}`,
             },
                 {
                     name: "What to do next?",
